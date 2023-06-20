@@ -59,7 +59,6 @@ a {
     display: flex;
     justify-content: space-between;
     padding-bottom: 3px;
-    color: 
 }
 
 .hangleft {
@@ -115,3 +114,14 @@ transform: rotate(45deg);
     background-color: lightcoral;
 }
 
+.goodactive {
+    background-color: lightgreen;
+}
+
+.fringeactive {
+    background-color: lightblue;
+}
+
+.toughactive {
+    background-color: lightcoral;
+}

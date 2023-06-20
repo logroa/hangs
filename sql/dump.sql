@@ -47,6 +47,7 @@ INSERT INTO hangs (name, created_by, pack) VALUES ('testhang2', 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (2, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 2, 0);
+INSERT INTO votes (voter, hang, direction) VALUES (3, 2, 0);
 
 drop table chat;
 drop table votes;
