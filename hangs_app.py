@@ -78,8 +78,10 @@ def find_ip(ip):
 def get_pack(user_id, pack):
     cur = db_conn.cursor()
     query = f'''
-        select json_agg(to_json(d)) from(select h.name, p.handle as created_by, c.sum, v2.direction
-        from (select * from hangs where pack = '{pack}') h inner join 
+        select json_agg(to_json(d)) from (select h.name, h.packname, p.handle as created_by, c.sum, v2.direction
+        from (select h1.*, p.name as packname from hangs h1
+            inner join packs p on p.id = h1.pack
+            where p.name = '{pack}') h inner join 
         (select hang, sum(direction)
         from votes
         group by hang
@@ -92,6 +94,18 @@ def get_pack(user_id, pack):
         ;
     '''
     cur.execute(query)
+    data = cur.fetchall()[0][0]
+    if data:
+        return data
+    return []
+
+
+def get_packs():
+    cur = db_conn.cursor()
+    query = '''
+        select json_agg(to_json(d)) from (select * from packs) d;
+    '''
+    cur.execute(query)
     return cur.fetchall()[0][0]
 
 
@@ -99,6 +113,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         print("Checking user...")
+        # session.clear()
         if 'user' not in session:
             print("Not logged in.")
             res = find_ip(request.remote_addr)
@@ -138,9 +153,21 @@ def login_required(f):
 @app.route('/', methods=['GET'])
 @login_required
 def home():
+    packs = get_packs()
+    return render_template('home.html', packs=packs)
+
+
+@app.route('/pack/<pack_name>', methods=['GET', 'POST'])
+@login_required
+def pack(pack_name):
     user_id = find_user(0, session['user'])[0]
-    pack = get_pack(user_id, 'testpack')
-    return render_template('home.html', pack=pack)
+    pack = get_pack(user_id, pack_name)
+    packs = get_packs()
+    for p in packs:
+        if p['name'] == pack_name:
+            p['active'] = True
+    return render_template('pack.html', packname=pack_name, pack=pack, packs=packs)
+
 
 @app.route('/new', methods=['GET', 'POST'])
 def new():

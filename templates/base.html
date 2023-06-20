@@ -2,15 +2,15 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}" />
-        <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap" rel="stylesheet">
+
         <title>{% block title %}hangs{% endblock %}</title>
     </head>
     <body>
-        <div class="headpiece">
-            <h1>hangs</h1>
-        </div>
-
         <div class="sitecontent">
             {% block content %}
             {% endblock %}

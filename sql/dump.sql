@@ -4,12 +4,19 @@ CREATE TABLE IF NOT EXISTS people (
     ip VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS packs (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR (100) NOT NULL,
+    created_at TIMESTAMP,
+    description VARCHAR (200)
+);
+
 CREATE TABLE IF NOT EXISTS hangs (
     id SERIAL PRIMARY KEY,
     name VARCHAR (200) NOT NULL,
     created_by INTEGER REFERENCES people (id),
     created_at TIMESTAMP,
-    pack VARCHAR(100)
+    pack INTEGER REFERENCES packs (id)
 );
 
 CREATE TABLE IF NOT EXISTS votes (
@@ -28,14 +35,21 @@ CREATE TABLE IF NOT EXISTS chat (
 );
 
 -- TEST DATA
-INSERT INTO hangs (name, created_by, pack) VALUES ('testhang', 1, 'testpack');
-INSERT INTO hangs (name, created_by, pack) VALUES ('testhang2', 1, 'testpack');
-
 INSERT INTO people (handle, ip) VALUES ('testguy', '1.1.1.1');
 INSERT INTO people (handle, ip) VALUES ('testguy2', '1.1.1.2');
+
+INSERT INTO packs (name) VALUES ('testpack');
+INSERT INTO packs (name) VALUES ('testpack2');
+
+INSERT INTO hangs (name, created_by, pack) VALUES ('testhang', 1, 1);
+INSERT INTO hangs (name, created_by, pack) VALUES ('testhang2', 1, 1);
 
 INSERT INTO votes (voter, hang, direction) VALUES (1, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (2, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 2, 0);
-INSERT INTO votes (voter, hang, direction) VALUES (2, 2, -1);
-INSERT INTO votes (voter, hang, direction) VALUES (3, 2, -1);
+
+drop table chat;
+drop table votes;
+drop table hangs;
+drop table packs;
+drop table people;

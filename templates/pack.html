@@ -4,19 +4,25 @@
 
 {% block content %}
 <div class="headpiece">
-    <h1>hangs</h1>
+    <h1>hangs/{{ packname }}</h1>
 </div>
 <div id="navbuttons">
     {% for p in packs %}
     <a href="{{ url_for('pack', pack_name=p.name) }}">
+        {% if p.active %}
+        <div class="packbutton activepack">
+        {% else %}
         <div class="packbutton">
+        {% endif %}
             {{ p.name }}
         </div>
     </a>
     {% endfor %}
 </div> <br/>
 <div>
-    Yeah man so pretty much just pick a pack above and vote if what's in it would be a good, tough, or fringe hang. Sweet
+    {% for hang in pack %}
+        {{ hang.name }} {{ hang.sum }} {{ hang.direction }}<br/>
+    {% endfor %}
 </div>
 <script>
 
