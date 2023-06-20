@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}" />
+        <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet'>
+        <title>{% block title %}hangs{% endblock %}</title>
+    </head>
+    <body>
+        <div class="headpiece">
+            <h1>hangs</h1>
+        </div>
+
+        <div class="sitecontent">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>

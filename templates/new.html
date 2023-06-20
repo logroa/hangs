@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}hangs{% endblock %}
+
+{% block content %}
+<div>
+
+    <div id="regmessage">
+        {{ message }}
+    </div>
+
+    <form method="post">
+
+        <div class="validatebox">
+            Make a
+            <input type="text" name="handle"
+                placeholder="username" class="validateinput"
+                value="{{ request.form['handle'] }}">
+            </input>
+        </div></br>
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

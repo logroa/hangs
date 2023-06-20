@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}hangs{% endblock %}
+
+{% block content %}
+<div>
+    what's up
+    {% for hang in pack %}
+        {{ hang }} <br/>
+    {% endfor %}
+</div>
+<script>
+
+</script>
+{% endblock %}
