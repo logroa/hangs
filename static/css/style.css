@@ -98,7 +98,20 @@ transform: rotate(45deg);
 }
 
 .votebutton {
-    background-color: none;
-    padding: 1px;
+    background-color: #E5E4E2;
+    margin: 2px;
+    border: none;
+}
+
+#goodvote:hover {
+    background-color: lightgreen;
+}
+
+#fringevote:hover {
+    background-color: lightblue;
+}
+
+#toughvote:hover {
+    background-color: lightcoral;
 }
 
