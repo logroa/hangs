@@ -100,6 +100,8 @@ def get_pack(user_id, pack):
     cur.execute(query)
     data = cur.fetchall()[0][0]
     if data:
+        for d in data:
+            d['search'] = d['name'].replace(" ", "+")
         return data
     return []
 

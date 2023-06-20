@@ -39,13 +39,24 @@
     {% for hang in pack %}
         <div class="hang">
             <div class="hangleft">
-                {{ hang.name }}
+                <a class="leftlink" href="https://www.google.com/search?q={{ hang.search }}" target="_blank">{{ hang.name }}</a>
             </div>
             <div class="hangmiddle">
-                {{ hang.direction }}
-                <i class="arrow up"></i>
-                <i class="fringe">-</i>
-                <i class="arrow down"></i>
+                <button class="votebutton">
+                    <div class="votebox">
+                        <i class="arrow up"></i>
+                    </div>
+                </button>
+                <button class="votebutton">
+                    <div class="votebox">
+                        <i class="fringe">-</i>
+                    </div>
+                </button>
+                <button class="votebutton">
+                    <div class="votebox">
+                        <i class="arrow down"></i>
+                    </div>
+                </button>
             </div>
             <div class="hangright">
                 {{ hang.sum }}
