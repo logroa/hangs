@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS votes (
 CREATE TABLE IF NOT EXISTS chat (
     id SERIAL PRIMARY KEY,
     chatter INTEGER REFERENCES people (id),
-    about INTEGER REFERENCES hangs (id),
+    about INTEGER REFERENCES packs (id),
     created_at TIMESTAMP,
     content VARCHAR(1048)
 );

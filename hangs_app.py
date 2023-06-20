@@ -13,6 +13,10 @@ from functools import wraps
 from datetime import datetime
 from difflib import SequenceMatcher
 
+# NOTES
+# i like a learn more link on the chat page that oepns a new window w just
+# a simple google search
+
 ###############################################################
 ########################## SET UP #############################
 ###############################################################
@@ -163,10 +167,12 @@ def pack(pack_name):
     user_id = find_user(0, session['user'])[0]
     pack = get_pack(user_id, pack_name)
     packs = get_packs()
+    desc = ""
     for p in packs:
         if p['name'] == pack_name:
             p['active'] = True
-    return render_template('pack.html', packname=pack_name, pack=pack, packs=packs)
+            desc = p['description']
+    return render_template('pack.html', packname=pack_name, description=desc, pack=pack, packs=packs)
 
 
 @app.route('/new', methods=['GET', 'POST'])

@@ -18,10 +18,39 @@
         </div>
     </a>
     {% endfor %}
-</div> <br/>
-<div>
+</div>
+<p class="description">
+    {% if description is not none %}
+        {{ description }}
+    {% endif %}
+</p>
+<div class="packcontainer">
+    <div class="hang">
+        <div class="hangleft">
+            hang
+        </div>
+        <div class="hangmiddle">
+            your rating
+        </div>
+        <div class="hangright">
+            total score
+        </div>
+    </div> <br/>
     {% for hang in pack %}
-        {{ hang.name }} {{ hang.sum }} {{ hang.direction }}<br/>
+        <div class="hang">
+            <div class="hangleft">
+                {{ hang.name }}
+            </div>
+            <div class="hangmiddle">
+                {{ hang.direction }}
+                <i class="arrow up"></i>
+                <i class="fringe">-</i>
+                <i class="arrow down"></i>
+            </div>
+            <div class="hangright">
+                {{ hang.sum }}
+            </div>
+        </div>
     {% endfor %}
 </div>
 <script>
