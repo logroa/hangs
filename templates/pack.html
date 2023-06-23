@@ -37,15 +37,15 @@
         </div>
     </div> <br/>
     {% for hang in pack %}
-        <div class="hang">
+        <div class="hang" id="{{ hang.name }}">
             <div class="hangleft">
                 <a class="leftlink" href="https://www.google.com/search?q={{ hang.search }}" target="_blank">{{ hang.name }}</a>
             </div>
             <div class="hangmiddle">
                 {% if hang.direction == 1 %}
-                    <button class="votebutton goodactive" id="goodvote">
+                    <button class="votebutton goodvote goodactive" id="goodvote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, 1, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% else %}
-                    <button class="votebutton" id="goodvote">
+                    <button class="votebutton goodvote" id="goodvote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, 1, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% endif %}
                         <div class="votebox">
                             <i class="arrow up"></i>
@@ -53,9 +53,9 @@
                     </button>
 
                 {% if hang.direction == 0 %}
-                    <button class="votebutton fringeactive" id="fringevote">
+                    <button class="votebutton fringevote fringeactive" id="fringevote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, 0, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% else %}
-                    <button class="votebutton" id="fringevote">
+                    <button class="votebutton fringevote" id="fringevote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, 0, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% endif %}
                         <div class="votebox">
                             <i class="fringe">-</i>
@@ -63,22 +63,76 @@
                     </button>
 
                 {% if hang.direction == -1 %}
-                    <button class="votebutton toughactive" id="toughvote">
+                    <button class="votebutton toughvote toughactive" id="toughvote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, -1, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% else %}
-                    <button class="votebutton" id="toughvote">
+                    <button class="votebutton toughvote" id="toughvote{{ hang.id }}" onclick="takeVote('{{ api_url }}', '{{ hang.name }}', {{ hang.id }}, -1, {% if hang.direction is not none %}{{ hang.direction }}{% else %}-2{% endif %})">
                 {% endif %} 
                         <div class="votebox">
                             <i class="arrow down"></i>
                         </div>
                     </button>
             </div>
-            <div class="hangright">
+            <div class="hangright" id="totalscore{{ hang.id}}">
                 {{ hang.sum }}
             </div>
         </div>
     {% endfor %}
 </div>
 <script>
+    var VOTE2TITLE = {
+        "1": "goodvote",
+        "0": "fringevote", 
+        "-1": "toughvote"
+    }
 
+    var VOTEACTIVE = {
+        "1": "goodactive",
+        "0": "fringeactive", 
+        "-1": "toughactive"        
+    }
+
+    function takeVote(api_url, hang_name, hang, vote, existing_vote) {
+        if (vote != existing_vote) {
+            // make request
+            fetch(`${api_url}/vote`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "hang": hang,
+                    "vote": vote,
+                    "existing": existing_vote
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                // update total score for that hang
+                console.log(document.getElementById(`totalscore${hang}`).innerHTML)
+                console.log(parseInt(document.getElementById(`totalscore${hang}`).innerHTML))
+                console.log(vote)
+                document.getElementById(`totalscore${hang}`).innerHTML = parseInt(document.getElementById(`totalscore${hang}`).innerHTML) + vote;
+
+                // change css for the button that's selected
+                if (existing_vote > -2) {
+                    document.getElementById(`totalscore${hang}`).innerHTML = parseInt(document.getElementById(`totalscore${hang}`).innerHTML) - existing_vote;
+                    document.getElementById(`${VOTE2TITLE[existing_vote.toString()]}${hang}`).className = `votebutton ${VOTE2TITLE[existing_vote.toString()]}`;
+                }
+                document.getElementById(`${VOTE2TITLE[vote.toString()]}${hang}`).className = `votebutton ${VOTE2TITLE[vote.toString()]} ${VOTEACTIVE[vote.toString()]}`;
+
+                // have to reset direction as well - this is gonna suck
+
+
+            })
+
+            // figure out how to reorder list
+
+        }
+        else {
+            console.log("Voting same way, no need to double dip.")
+        }
+    }
 </script>
 {% endblock %}

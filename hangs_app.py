@@ -30,6 +30,7 @@ DB_PASSWORD = os.getenv('DB_PW')
 DB_PORT = os.getenv('DB_PORT')
 DB_NAME = os.getenv('DB_NAME')
 DB_ENDPOINT = os.getenv('DB_ENDPOINT')
+API_URL = os.getenv('API_URL')
 
 try:
     db_conn = psycopg2.connect(
@@ -82,7 +83,7 @@ def find_ip(ip):
 def get_pack(user_id, pack):
     cur = db_conn.cursor()
     query = f'''
-        select json_agg(to_json(d)) from (select h.name, h.packname, p.handle as created_by, c.sum, v2.direction
+        select json_agg(to_json(d)) from (select h.id, h.name, h.packname, p.handle as created_by, c.sum, v2.direction
         from (select h1.*, p.name as packname from hangs h1
             inner join packs p on p.id = h1.pack
             where p.name = '{pack}') h inner join 
@@ -113,6 +114,22 @@ def get_packs():
     '''
     cur.execute(query)
     return cur.fetchall()[0][0]
+
+
+def insert_vote(voter, hang, vote, existing):
+    cur = db_conn.cursor()
+    if existing > -2:
+        print("updating")
+        cur.execute(f'''
+            UPDATE votes SET direction={vote} WHERE voter={voter} AND hang={hang};       
+        ''')
+    else:
+        print("inserting")
+        cur.execute(f'''
+            INSERT INTO votes (voter, hang, direction) VALUES ({voter}, {hang}, {vote});
+        ''')
+    db_conn.commit()
+    print(f"{voter}, {hang}, {vote}. nice")
 
 
 def login_required(f):
@@ -174,7 +191,7 @@ def pack(pack_name):
         if p['name'] == pack_name:
             p['active'] = True
             desc = p['description']
-    return render_template('pack.html', packname=pack_name, description=desc, pack=pack, packs=packs)
+    return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs)
 
 
 @app.route('/new', methods=['GET', 'POST'])
@@ -191,6 +208,24 @@ def new():
         return render_template('new.html', message='Username already taken.')
 
     return render_template('new.html')
+
+
+@app.route('/vote', methods=['POST'])
+def vote():
+    try:
+        data = request.get_json()
+        user_id = find_user(0, session['user'])[0]
+        vote = data.get('vote')
+        hang = data.get('hang')
+        existing = data.get('existing')
+        insert_vote(user_id, hang, vote, existing)
+        return jsonify(**{
+            "status": "success"
+        })
+    except Exception as e:
+        return jsonify(**{
+            "status": f"failure: {e}"
+        })
 
 
 if __name__ == '__main__':

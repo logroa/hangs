@@ -102,15 +102,15 @@ transform: rotate(45deg);
     border: none;
 }
 
-#goodvote:hover {
+.goodvote:hover {
     background-color: lightgreen;
 }
 
-#fringevote:hover {
+.fringevote:hover {
     background-color: lightblue;
 }
 
-#toughvote:hover {
+.toughvote:hover {
     background-color: lightcoral;
 }
 
