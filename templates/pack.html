@@ -110,9 +110,6 @@
             .then(data => {
                 console.log(data)
                 // update total score for that hang
-                console.log(document.getElementById(`totalscore${hang}`).innerHTML)
-                console.log(parseInt(document.getElementById(`totalscore${hang}`).innerHTML))
-                console.log(vote)
                 document.getElementById(`totalscore${hang}`).innerHTML = parseInt(document.getElementById(`totalscore${hang}`).innerHTML) + vote;
 
                 // change css for the button that's selected
@@ -123,7 +120,12 @@
                 document.getElementById(`${VOTE2TITLE[vote.toString()]}${hang}`).className = `votebutton ${VOTE2TITLE[vote.toString()]} ${VOTEACTIVE[vote.toString()]}`;
 
                 // have to reset direction as well - this is gonna suck
-
+                document.getElementById(`goodvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 1, vote) }
+                document.getElementById(`fringevote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 0, vote) }
+                document.getElementById(`toughvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, -1, vote) }
+                // document.getElementById(`goodvote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, 1, ${vote})`
+                // document.getElementById(`fringevote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, 0, ${vote})`
+                // document.getElementById(`toughvote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, -1, ${vote})`
 
             })
 
