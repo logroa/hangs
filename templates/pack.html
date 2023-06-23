@@ -36,8 +36,9 @@
             total score
         </div>
     </div> <br/>
+    <div id="hangbox">
     {% for hang in pack %}
-        <div class="hang" id="{{ hang.name }}">
+        <div class="hang hangboxes" id="{{ hang.name }}">
             <div class="hangleft">
                 <a class="leftlink" href="https://www.google.com/search?q={{ hang.search }}" target="_blank">{{ hang.name }}</a>
             </div>
@@ -77,6 +78,7 @@
             </div>
         </div>
     {% endfor %}
+    </div>
 </div>
 <script>
     var VOTE2TITLE = {
@@ -123,13 +125,21 @@
                 document.getElementById(`goodvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 1, vote) }
                 document.getElementById(`fringevote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 0, vote) }
                 document.getElementById(`toughvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, -1, vote) }
-                // document.getElementById(`goodvote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, 1, ${vote})`
-                // document.getElementById(`fringevote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, 0, ${vote})`
-                // document.getElementById(`toughvote${hang}`).onclick = `takeVote('${api_url}', '${hang_name}', ${hang}, -1, ${vote})`
+
+                // figure out how to reorder list
+                // var hang_boxes = [];
+                // var html_boxes = document.getElementsByClassName('hangboxes');
+                // for (var i = 0; i < html_boxes.length; ++i) {
+                //     hang_boxes.push([parseInt(html_boxes[i].getElementsByClassName("hangright")[0].innerHTML), html_boxes[i].outerHTML]);
+                // }
+                // hang_boxes.sort(function(a,b){return b[0] - a[0];}); 
+                // var sorted_boxes = "";
+                // for (var i = 0; i < hang_boxes.length; ++i) {
+                //     sorted_boxes += hang_boxes[i][1].toString();
+                // }
+                // document.getElementById("hangbox").innerHTML = sorted_boxes;
 
             })
-
-            // figure out how to reorder list
 
         }
         else {

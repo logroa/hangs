@@ -1,0 +1,1 @@
+web: gunicorn hangs_app:app

@@ -129,7 +129,6 @@ def insert_vote(voter, hang, vote, existing):
             INSERT INTO votes (voter, hang, direction) VALUES ({voter}, {hang}, {vote});
         ''')
     db_conn.commit()
-    print(f"{voter}, {hang}, {vote}. nice")
 
 
 def login_required(f):
