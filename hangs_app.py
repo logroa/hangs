@@ -49,11 +49,12 @@ except:
 ########################## HELPERS ############################
 ###############################################################
 
-def insert_user(og_handle, ip):
+def insert_user(og_handle, code):
     cur = db_conn.cursor()
     handle = og_handle.replace("'", "''")
+    hashed_code = generate_password(code)
     cur.execute(f'''
-        INSERT INTO people (handle, ip) VALUES ('{handle}', '{ip}');
+        INSERT INTO people (handle, code) VALUES ('{handle}', '{hashed_code}');
     ''')
     db_conn.commit()
     print(f'{og_handle} registered.')
@@ -75,9 +76,14 @@ def find_user(id, username=None):
 
 def find_ip(ip):
     cur = db_conn.cursor()
-    query = f"SELECT * FROM people WHERE ip = '{ip}';"
-    cur.execute(query)
-    return cur.fetchone()   
+    cur.execute(f"SELECT * FROM people WHERE ip = '{ip}';")
+    return cur.fetchone()
+
+
+def retreive_password(user_id):
+    cur = db_conn.cursor()
+    cur.execute(f"SELECT code FROM people WHERE id = {user_id}")
+    return cur.fetchone()
 
 
 def get_pack(user_id, pack):
@@ -131,20 +137,23 @@ def insert_vote(voter, hang, vote, existing):
     db_conn.commit()
 
 
+def generate_password(password):
+    algorithm = 'sha512'
+    salt = uuid.uuid4().hex
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    password_hash = hash_obj.hexdigest()
+    password_db_string = "$".join([algorithm, salt, password_hash])
+    return password_db_string
+
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         print("Checking user...")
         # session.clear()
         if 'user' not in session:
-            print("Not logged in.")
-            res = find_ip(request.remote_addr)
-            if res:
-                print("IP Found.")
-                id = res[0]
-                session['user'] = res[1]
-                return f(*args, **kwargs)
-
             return redirect(url_for('new'))
 
         # current_ip = find_ip(request.remote_addr)
@@ -197,16 +206,32 @@ def pack(pack_name):
 def new():
     if request.method == 'POST':
         username = request.form['handle']
-
+        code = request.form['code']
         user = find_user(0, username)
         if not user:
-            ip = request.remote_addr
-            insert_user(username, ip)
+            insert_user(username, code)
             session['user'] = username
             return redirect(url_for('home'))
         return render_template('new.html', message='Username already taken.')
 
     return render_template('new.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        try:
+            user = find_user(0, request.form['handle'])[0]
+            password = retreive_password(user[0])
+            if generate_password(request.form['code']) == password:
+                session['user'] = user[1]
+                session.permanent = True
+                return redirect(url_for('home'))
+            return render_template('login.html', message="Incorrect login")
+        except:
+            return render_template('login.html', message="Incorrect login")
+    
+    return render_template('login.html')
 
 
 @app.route('/vote', methods=['POST'])

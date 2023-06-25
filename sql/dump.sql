@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS people (
     id SERIAL PRIMARY KEY,
     handle VARCHAR(100) NOT NULL,
-    ip VARCHAR(100) NOT NULL
+    code VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS packs (
@@ -34,9 +34,14 @@ CREATE TABLE IF NOT EXISTS chat (
     content VARCHAR(1048)
 );
 
+CREATE TABLE IF NOT EXISTS traffic (
+    ip VARCHAR(100) NOT NULL,
+    visited_at TIMESTAMP
+);
+
 -- TEST DATA
-INSERT INTO people (handle, ip) VALUES ('testguy', '1.1.1.1');
-INSERT INTO people (handle, ip) VALUES ('testguy2', '1.1.1.2');
+INSERT INTO people (handle, code) VALUES ('testguy', 'cool');
+INSERT INTO people (handle, code) VALUES ('testguy2', 'dude');
 
 INSERT INTO packs (name) VALUES ('testpack');
 INSERT INTO packs (name) VALUES ('testpack2');
@@ -47,10 +52,11 @@ INSERT INTO hangs (name, created_by, pack) VALUES ('testhang2', 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (2, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 2, 0);
-INSERT INTO votes (voter, hang, direction) VALUES (3, 2, 0);
+-- INSERT INTO votes (voter, hang, direction) VALUES (3, 2, 0);
 
 drop table chat;
 drop table votes;
 drop table hangs;
 drop table packs;
 drop table people;
+drop table traffic;
