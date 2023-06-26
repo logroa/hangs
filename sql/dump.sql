@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS people (
     id SERIAL PRIMARY KEY,
     handle VARCHAR(100) NOT NULL,
-    code VARCHAR(200) NOT NULL
+    code VARCHAR(200) NOT NULL,
+    created_at TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS packs (
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS votes (
     voter INTEGER REFERENCES people (id),
     hang INTEGER REFERENCES hangs (id),
     PRIMARY KEY (voter, hang),
+    created_at TIMESTAMP,
     direction INTEGER
 );
 
@@ -53,6 +55,8 @@ INSERT INTO votes (voter, hang, direction) VALUES (1, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (2, 1, 1);
 INSERT INTO votes (voter, hang, direction) VALUES (1, 2, 0);
 -- INSERT INTO votes (voter, hang, direction) VALUES (3, 2, 0);
+
+INSERT INTO chat (chatter, about, content)
 
 drop table chat;
 drop table votes;
