@@ -125,3 +125,7 @@ transform: rotate(45deg);
 .toughactive {
     background-color: lightcoral;
 }
+
+#logout {
+    text-align: right;
+}

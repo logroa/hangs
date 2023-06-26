@@ -74,6 +74,14 @@ def find_user(id, username=None):
     return cur.fetchone()
 
 
+def check_password(password, password_db_string):
+    [algorithm, salt, password_hash] = password_db_string.split("$")
+    hash_obj = hashlib.new(algorithm)
+    password_salted = salt + password
+    hash_obj.update(password_salted.encode('utf-8'))
+    return hash_obj.hexdigest() == password_hash
+
+
 def find_ip(ip):
     cur = db_conn.cursor()
     cur.execute(f"SELECT * FROM people WHERE ip = '{ip}';")
@@ -83,7 +91,7 @@ def find_ip(ip):
 def retreive_password(user_id):
     cur = db_conn.cursor()
     cur.execute(f"SELECT code FROM people WHERE id = {user_id}")
-    return cur.fetchone()
+    return cur.fetchone()[0]
 
 
 def get_pack(user_id, pack):
@@ -205,7 +213,7 @@ def pack(pack_name):
 @app.route('/new', methods=['GET', 'POST'])
 def new():
     if request.method == 'POST':
-        username = request.form['handle']
+        username = request.form['handle'].lower()
         code = request.form['code']
         user = find_user(0, username)
         if not user:
@@ -221,17 +229,25 @@ def new():
 def login():
     if request.method == 'POST':
         try:
-            user = find_user(0, request.form['handle'])[0]
-            password = retreive_password(user[0])
-            if generate_password(request.form['code']) == password:
+            user = find_user(0, request.form['handle'].lower())
+            password_db_string = retreive_password(user[0])
+            if check_password(request.form['code'], password_db_string):
                 session['user'] = user[1]
                 session.permanent = True
                 return redirect(url_for('home'))
             return render_template('login.html', message="Incorrect login")
-        except:
+        except Exception as e:
             return render_template('login.html', message="Incorrect login")
     
     return render_template('login.html')
+
+
+@app.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    print(f"Logging {session['user']} out.")
+    session.clear()
+    return redirect(url_for('new'))
 
 
 @app.route('/vote', methods=['POST'])

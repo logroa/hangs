@@ -121,12 +121,7 @@
                 }
                 document.getElementById(`${VOTE2TITLE[vote.toString()]}${hang}`).className = `votebutton ${VOTE2TITLE[vote.toString()]} ${VOTEACTIVE[vote.toString()]}`;
 
-                // have to reset direction as well - this is gonna suck
-                document.getElementById(`goodvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 1, vote) }
-                document.getElementById(`fringevote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 0, vote) }
-                document.getElementById(`toughvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, -1, vote) }
-
-                // figure out how to reorder list
+                // // figure out how to reorder list
                 // var hang_boxes = [];
                 // var html_boxes = document.getElementsByClassName('hangboxes');
                 // for (var i = 0; i < html_boxes.length; ++i) {
@@ -138,6 +133,11 @@
                 //     sorted_boxes += hang_boxes[i][1].toString();
                 // }
                 // document.getElementById("hangbox").innerHTML = sorted_boxes;
+
+                // have to reset direction as well - this is gonna suck
+                document.getElementById(`goodvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 1, vote) }
+                document.getElementById(`fringevote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, 0, vote) }
+                document.getElementById(`toughvote${hang}`).onclick = function() { takeVote(api_url, hang_name, hang, -1, vote) }
 
             })
 
