@@ -23,9 +23,18 @@ a {
     color: #36454F;
 }
 
+.homelink {
+    color: #36454F;
+}
+
 .leftlink:hover {
     color: #7393B3;
 }
+
+.homelink:hover {
+    color: #7393B3;
+}
+
 
 #navbuttons {
     display: flex;
@@ -128,4 +137,28 @@ transform: rotate(45deg);
 
 #logout {
     text-align: right;
+}
+
+.chatcontainer {
+    background-color: lightgray;
+    border-radius: 2px;
+    padding: 15px;
+    height: 50vh;
+    overflow-y:auto
+}
+
+.chatbox {
+    width: 60%;
+}
+
+.message {
+    background-color: #36454F;
+    color: #f5f5f5;
+    padding: 5px;
+    border-radius: 2px;
+
+}
+
+.messagedate {
+    color: #606865;
 }

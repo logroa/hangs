@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="headpiece">
-    <h1>hangs/{{ packname }}</h1>
+    <h1><a class="homelink" href="{{ url_for('home') }}">hangs</a>/{{ packname }}</h1>
 </div>
 <div id="navbuttons">
     {% for p in packs %}
@@ -80,6 +80,22 @@
     {% endfor %}
     </div>
 </div>
+
+<br/>
+
+<div class="chatcontainer">
+    {% for c in chats %}
+        <div class="chatbox">
+            {{ c.handle }}
+            <div class="message">
+                {{ c.content }}
+            </div>
+            <div class="messagedate">{{ c.date }}</div>
+        </div>
+        <br/>
+    {% endfor %}
+</div>
+
 <script>
     var VOTE2TITLE = {
         "1": "goodvote",

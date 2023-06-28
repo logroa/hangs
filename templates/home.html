@@ -7,7 +7,7 @@
     <h1>hangs</h1>
 
     <form id="logout" action="{{ url_for('logout') }}" name="logout" method="post" enctype="multipart/form-data">
-        <input type="submit" name="logout" value="Log Out"/>
+        {{ user }} <input type="submit" name="logout" value="Log Out"/>
     </form>
 </div>
 <div id="navbuttons">

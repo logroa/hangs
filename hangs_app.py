@@ -101,7 +101,7 @@ def get_pack_id(pack_name):
     query = f'''
         select id from packs where name = '{clean_pack_name}';
     '''
-    cur.execute()
+    cur.execute(query)
     return cur.fetchone()[0]
 
 
@@ -168,7 +168,10 @@ def get_chats(pack, offset=0):
         LIMIT 15 OFFSET {offset*15}) d;
     '''
     cur.execute(query)
-    return cur.fetchall()[0][0]
+    chats = cur.fetchall()[0][0]
+    for c in chats:
+        c['date'] = c['created_at'].split('T')[0]
+    return chats
 
 
 def insert_chat(content, chatter, about):
@@ -248,7 +251,7 @@ def admin_required(f):
 @login_required
 def home():
     packs = get_packs()
-    return render_template('home.html', packs=packs)
+    return render_template('home.html', packs=packs, user=session['user'])
 
 
 @app.route('/pack/<pack_name>', methods=['GET', 'POST'])
@@ -263,6 +266,9 @@ def pack(pack_name):
         if p['name'] == pack_name:
             p['active'] = True
             desc = p['description']
+    for c in chats:
+        if c['handle'] == session['user']:
+            c['mine'] = True
     return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs, chats=chats)
 
 
@@ -283,6 +289,9 @@ def chat():
 @login_required
 def more_chats(pack_name, page):
     chats = get_chats(get_pack_id(pack_name), page)
+    for c in chats:
+        if c['handle'] == session['user']:
+            c['mine'] = True
     return jsonify(**{
             "chats": chats
     })
