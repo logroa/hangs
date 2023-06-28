@@ -12,6 +12,7 @@ import uuid
 from functools import wraps
 from datetime import datetime
 from difflib import SequenceMatcher
+from datetime import datetime
 
 # NOTES
 # i like a learn more link on the chat page that oepns a new window w just
@@ -54,7 +55,7 @@ def insert_user(og_handle, code):
     handle = og_handle.replace("'", "''")
     hashed_code = generate_password(code)
     cur.execute(f'''
-        INSERT INTO people (handle, code) VALUES ('{handle}', '{hashed_code}');
+        INSERT INTO people (handle, code, created_at, access_role) VALUES ('{handle}', '{hashed_code}', '{datetime.now()}', 2);
     ''')
     db_conn.commit()
     print(f'{og_handle} registered.')
@@ -91,6 +92,16 @@ def find_ip(ip):
 def retreive_password(user_id):
     cur = db_conn.cursor()
     cur.execute(f"SELECT code FROM people WHERE id = {user_id}")
+    return cur.fetchone()[0]
+
+
+def get_pack_id(pack_name):
+    cur = db_conn.cursor()
+    clean_pack_name = pack_name.replace("'", "''")
+    query = f'''
+        select id from packs where name = '{clean_pack_name}';
+    '''
+    cur.execute()
     return cur.fetchone()[0]
 
 
@@ -135,13 +146,36 @@ def insert_vote(voter, hang, vote, existing):
     if existing > -2:
         print("updating")
         cur.execute(f'''
-            UPDATE votes SET direction={vote} WHERE voter={voter} AND hang={hang};       
+            UPDATE votes SET direction={vote}, created_at={datetime.now()} WHERE voter={voter} AND hang={hang};       
         ''')
     else:
         print("inserting")
         cur.execute(f'''
-            INSERT INTO votes (voter, hang, direction) VALUES ({voter}, {hang}, {vote});
+            INSERT INTO votes (voter, hang, direction, created_at) VALUES ({voter}, {hang}, {vote}, '{datetime.now()}');
         ''')
+    db_conn.commit()
+
+
+def get_chats(pack, offset=0):
+    cur = db_conn.cursor()
+    query = f'''
+        select json_agg(to_json(d)) 
+        from (SELECT c.*, p.handle FROM chat c
+        INNER JOIN people p
+        ON p.id = c.chatter
+        WHERE c.about = {pack}
+        ORDER BY c.created_at ASC
+        LIMIT 15 OFFSET {offset*15}) d;
+    '''
+    cur.execute(query)
+    return cur.fetchall()[0][0]
+
+
+def insert_chat(content, chatter, about):
+    cur = db_conn.cursor()
+    new_content = content.replace("'", "''")
+    query = f'''INSERT INTO chat (chatter, about, content, created_at) VALUES ({chatter}, {about}, '{new_content}', '{datetime.now()}');'''
+    cur.execute(query)
     db_conn.commit()
 
 
@@ -169,8 +203,29 @@ def login_required(f):
         #     id = find_user(0, session['user'])[0]
         #     insert_machine_registration(request.remote_addr, id)
 
+
         return f(*args, **kwargs)
     return decorated_function
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        print("Checking user...")
+        # session.clear()
+        if 'user' not in session:
+            return redirect(url_for('new'))
+
+        # current_ip = find_ip(request.remote_addr)
+        # if not current_ip:
+        #     id = find_user(0, session['user'])[0]
+        #     insert_machine_registration(request.remote_addr, id)
+        if find_user(0, session['user'])[3] != 2:
+            return redirect(url_for('home'))
+
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 ###############################################################
 ############################ API ##############################
@@ -203,11 +258,34 @@ def pack(pack_name):
     pack = get_pack(user_id, pack_name)
     packs = get_packs()
     desc = ""
+    chats = get_chats(get_pack_id(pack_name))
     for p in packs:
         if p['name'] == pack_name:
             p['active'] = True
             desc = p['description']
-    return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs)
+    return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs, chats=chats)
+
+
+@app.route('/chat', methods=['POST'])
+@login_required
+def chat():
+    data = request.get_json()
+    user_id = find_user(0, session['user'])[0]
+    chat = data.get('chat')
+    pack = data.get('pack')
+    insert_chat(chat, user_id, get_pack_id(pack))
+    return jsonify(**{
+        "status": "success"
+    })
+
+
+@app.route('/chat/<pack_name>/<page>', methods=['GET', 'POST'])
+@login_required
+def more_chats(pack_name, page):
+    chats = get_chats(get_pack_id(pack_name), page)
+    return jsonify(**{
+            "chats": chats
+    })
 
 
 @app.route('/new', methods=['GET', 'POST'])
