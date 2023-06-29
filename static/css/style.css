@@ -148,7 +148,7 @@ transform: rotate(45deg);
 }
 
 .chatbox {
-    width: 60%;
+    width: 100%;
 }
 
 .message {
@@ -156,9 +156,23 @@ transform: rotate(45deg);
     color: #f5f5f5;
     padding: 5px;
     border-radius: 2px;
+    width: 60%;
+}
 
+.minec {
+    text-align: right;
+}
+
+.minem {
+    background-color: lightblue;
+    text-align: right;
+    left: 100%;
 }
 
 .messagedate {
     color: #606865;
+}
+
+#makecomment {
+    padding: 5px;
 }

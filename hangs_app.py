@@ -10,9 +10,8 @@ from dotenv import load_dotenv
 import hashlib
 import uuid
 from functools import wraps
-from datetime import datetime
-from difflib import SequenceMatcher
-from datetime import datetime
+from datetime import datetime, date
+
 
 # NOTES
 # i like a learn more link on the chat page that oepns a new window w just
@@ -156,21 +155,18 @@ def insert_vote(voter, hang, vote, existing):
     db_conn.commit()
 
 
-def get_chats(pack, offset=0):
+def get_chats(pack, offset=1):
     cur = db_conn.cursor()
     query = f'''
         select json_agg(to_json(d)) 
-        from (SELECT c.*, p.handle FROM chat c
-        INNER JOIN people p
-        ON p.id = c.chatter
-        WHERE c.about = {pack}
-        ORDER BY c.created_at ASC
-        LIMIT 15 OFFSET {offset*15}) d;
+        from (select c.*, p.handle from chat c inner join people p on p.id = chatter 
+        where c.about = {pack} order by c.created_at desc limit {15*offset}) d;
     '''
     cur.execute(query)
     chats = cur.fetchall()[0][0]
     for c in chats:
         c['date'] = c['created_at'].split('T')[0]
+    chats.reverse()
     return chats
 
 
@@ -269,7 +265,7 @@ def pack(pack_name):
     for c in chats:
         if c['handle'] == session['user']:
             c['mine'] = True
-    return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs, chats=chats)
+    return render_template('pack.html', api_url=API_URL, packname=pack_name, description=desc, pack=pack, packs=packs, chats=chats, user=session['user'])
 
 
 @app.route('/chat', methods=['POST'])
@@ -281,7 +277,8 @@ def chat():
     pack = data.get('pack')
     insert_chat(chat, user_id, get_pack_id(pack))
     return jsonify(**{
-        "status": "success"
+        "status": "success",
+        "date": str(date.today())
     })
 
 

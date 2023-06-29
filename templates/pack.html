@@ -83,17 +83,33 @@
 
 <br/>
 
-<div class="chatcontainer">
+<div class="chatcontainer" id="chatcontainer">
     {% for c in chats %}
+        {% if c.mine %}
+        <div class="chatbox minec">
+            {{ c.handle }}
+            <div class="message minem">
+        {% else %}
         <div class="chatbox">
             {{ c.handle }}
             <div class="message">
+        {% endif %}
                 {{ c.content }}
             </div>
             <div class="messagedate">{{ c.date }}</div>
         </div>
         <br/>
     {% endfor %}
+</div>
+<div id="makecomment">
+    <form id="comment" name="chat" method="post" enctype="multipart/form-data">
+        <input type="text" name="handle" id="newchat"
+        placeholder="Anything really man" class="validateinput"
+        value="{{ request.form['chat'] }}"
+        maxlength="500">
+        <button type="button" class="btn btn-primary" onclick="postChat('{{ api_url }}', '{{ packname }}', '{{ user }}')">post</button>
+    </form>
+</input>
 </div>
 
 <script>
@@ -162,5 +178,36 @@
             console.log("Voting same way, no need to double dip.")
         }
     }
+
+    function postChat(api_url, pack, handle) {
+        chat = document.getElementById("newchat").value;
+        fetch(`${api_url}/chat`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "chat": chat,
+                "pack": pack
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.status);
+            var chats = document.getElementById('chatcontainer').innerHTML.toString();
+            chats += `<div class="chatbox minec">
+                        ${handle}
+                        <div class="message minem">
+                            ${chat}
+                        </div>
+                        <div class="messagedate">${data.date}</div>
+                    </div>
+                    <br/>`
+            document.getElementById('chatcontainer').innerHTML = chats;
+            document.getElementById('newchat').value = '';
+        })
+    }
+
 </script>
 {% endblock %}
