@@ -166,7 +166,8 @@ transform: rotate(45deg);
 .minem {
     background-color: lightblue;
     text-align: right;
-    left: 100%;
+    position: relative;
+    left: 40%;
 }
 
 .messagedate {

@@ -1,3 +1,11 @@
+drop table chat;
+drop table votes;
+drop table hangs;
+drop table packs;
+drop table people;
+drop table traffic;
+drop table roles;
+
 CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL
@@ -15,7 +23,8 @@ CREATE TABLE IF NOT EXISTS packs (
     id SERIAL PRIMARY KEY,
     name VARCHAR (100) NOT NULL,
     created_at TIMESTAMP,
-    description VARCHAR (200)
+    description VARCHAR (200),
+    active BOOLEAN
 );
 
 CREATE TABLE IF NOT EXISTS hangs (
@@ -54,8 +63,8 @@ INSERT INTO roles (title) VALUES ('pleb');
 INSERT INTO people (handle, code, access_role) VALUES ('testguy', 'cool', 1);
 INSERT INTO people (handle, code, access_role) VALUES ('testguy2', 'dude', 2);
 
-INSERT INTO packs (name) VALUES ('testpack');
-INSERT INTO packs (name) VALUES ('testpack2');
+INSERT INTO packs (name, description, active) VALUES ('testpack', 'testdescription', ntrue);
+INSERT INTO packs (name, active) VALUES ('testpack2', true);
 
 INSERT INTO hangs (name, created_by, pack) VALUES ('testhang', 1, 1);
 INSERT INTO hangs (name, created_by, pack) VALUES ('testhang2', 1, 1);
@@ -85,11 +94,3 @@ INSERT INTO chat (chatter, about, content, created_at) VALUES (1, 1, 'q', '2016-
 INSERT INTO chat (chatter, about, content, created_at) VALUES (1, 1, 'r', '2016-06-22 19:10:42');
 INSERT INTO chat (chatter, about, content, created_at) VALUES (1, 1, 's', '2016-06-22 19:10:43');
 INSERT INTO chat (chatter, about, content, created_at) VALUES (1, 1, 't', '2016-06-22 19:10:44');
-
-drop table chat;
-drop table votes;
-drop table hangs;
-drop table packs;
-drop table people;
-drop table traffic;
-drop table roles;

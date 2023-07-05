@@ -9,7 +9,7 @@
 <div id="navbuttons">
     {% for p in packs %}
     <a href="{{ url_for('pack', pack_name=p.name) }}">
-        {% if p.active %}
+        {% if p.name == packname %}
         <div class="packbutton activepack">
         {% else %}
         <div class="packbutton">

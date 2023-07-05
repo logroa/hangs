@@ -164,6 +164,8 @@ def get_chats(pack, offset=1):
     '''
     cur.execute(query)
     chats = cur.fetchall()[0][0]
+    if not chats:
+        chats = []
     for c in chats:
         c['date'] = c['created_at'].split('T')[0]
     chats.reverse()
@@ -260,7 +262,6 @@ def pack(pack_name):
     chats = get_chats(get_pack_id(pack_name))
     for p in packs:
         if p['name'] == pack_name:
-            p['active'] = True
             desc = p['description']
     for c in chats:
         if c['handle'] == session['user']:
