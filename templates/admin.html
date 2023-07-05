@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}hangs{% endblock %}
+
+{% block content %}
+<div class="headpiece">
+    <h1><a class="homelink" href="{{ url_for('home') }}">hangs</a>/admin</h1>
+</div>
+<div id="navbuttons">
+    {% for p in active_packs %}
+    <a href="{{ url_for('pack', pack_name=p.name) }}">
+        {% if p.name == packname %}
+        <div class="packbutton activepack">
+        {% else %}
+        <div class="packbutton">
+        {% endif %}
+            {{ p.name }}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% endblock %}
