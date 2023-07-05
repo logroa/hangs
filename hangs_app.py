@@ -352,6 +352,30 @@ def vote():
             "status": f"failure: {e}"
         })
 
+###############################################################
+######################### ADMIN API ###########################
+###############################################################
+
+@app.route('/admin', methods=['GET'])
+@admin_required
+def admin():
+    pass
+    # list of users and each of the packs as well as link to create new pack
+
+
+@app.route('/admin/new_pack', methods=['GET'])
+@admin_required
+def new_pack():
+    pass
+    # list of users and each of the packs as well as link to create new pack
+
+
+@app.route('/admin/<pack_name>', methods=['GET'])
+@admin_required
+def admin(pack_name):
+    pass
+    # list of users and each of the packs as well as link to create new pack
+
 
 if __name__ == '__main__':
     app.run()
