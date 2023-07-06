@@ -380,9 +380,12 @@ def admin_panel():
     return render_template('admin.html', active_packs=active_packs, inactive_packs=inactive_packs, users=users)
 
 
-@app.route('/admin/new_pack', methods=['GET'])
+@app.route('/admin/new_pack', methods=['GET', 'POST'])
 @admin_required
 def new_pack():
+    if request.method == 'POST':
+        pass
+    
     # list of users and each of the packs as well as link to create new pack
     return render_template('new_pack.html')
 
