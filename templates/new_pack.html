@@ -4,40 +4,38 @@
 
 {% block content %}
 <div class="headpiece">
-    <h1><a class="homelink" href="{{ url_for('home') }}">hangs</a>/admin</h1>
+    <h1><a class="homelink" href="{{ url_for('home') }}">hangs</a>/admin/new_pack</h1>
 </div>
 
-<a href="{{ url_for('new_pack') }}">New pack?</a>
+<form method="post">
 
-<div id="activepacks">
-    <h2>active packs</h2>
-    {% for p in active_packs %}
-    <a href="{{ url_for('modify_pack', pack_name=p.name) }}">
-        <div class="packbutton">
-            {{ p.name }}
-        </div>
-    </a>
-    {% endfor %}
-</div>
+    <div class="validatebox">
+        title
+        <input type="text" name="title"
+            placeholder="title" class="validateinput"
+            value="{{ request.form['title'] }}">
+        </input>
+        <br/>
 
-<div id="inactivepacks">
-    <h2>inactive packs</h2>
-    {% for p in inactive_packs %}
-    <a href="{{ url_for('modify_pack', pack_name=p.name) }}">
-        <div class="packbutton">
-            {{ p.name }}
-        </div>
-    </a>
-    {% endfor %}
-</div>
+        description
+        <input type="text" name="description"
+            placeholder="decription" class="validateinput"
+            value="{{ request.form['description'] }}">
+        </input>
+        <br/>
+        {% for i in range(1,21) %}
+            hang{{ i }}
+            <input type="text" name="hang{{ i }}"
+                placeholder="hang{{ i }}" class="validateinput"
+                value="{{ request.form['hang{{ i }}'] }}">
+            </input>
+            <br/>
+        {% endfor %}
+    </div></br>
 
-<div id="users">
-    <h2>users</h2>
-    {% for u in users %}
-        <div class="userguy">
-            {{ u.handle }} {{ u.created_at }}
-        </div>
-    {% endfor %}
-</div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Make pack</button>
+    </div>
+</form> 
 
 {% endblock %}

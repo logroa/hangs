@@ -383,8 +383,8 @@ def admin_panel():
 @app.route('/admin/new_pack', methods=['GET'])
 @admin_required
 def new_pack():
-    pass
     # list of users and each of the packs as well as link to create new pack
+    return render_template('new_pack.html')
 
 
 @app.route('/admin/<pack_name>', methods=['GET'])
