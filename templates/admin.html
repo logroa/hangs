@@ -6,14 +6,22 @@
 <div class="headpiece">
     <h1><a class="homelink" href="{{ url_for('home') }}">hangs</a>/admin</h1>
 </div>
-<div id="navbuttons">
+<div id="activepacks">
+    <h2>active packs</h2>
     {% for p in active_packs %}
-    <a href="{{ url_for('pack', pack_name=p.name) }}">
-        {% if p.name == packname %}
-        <div class="packbutton activepack">
-        {% else %}
+    <a href="{{ url_for('modify_pack', pack_name=p.name) }}">
         <div class="packbutton">
-        {% endif %}
+            {{ p.name }}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+<div id="inactivepacks">
+    <h2>inactive packs</h2>
+    {% for p in inactive_packs %}
+    <a href="{{ url_for('modify_pack', pack_name=p.name) }}">
+        <div class="packbutton">
             {{ p.name }}
         </div>
     </a>

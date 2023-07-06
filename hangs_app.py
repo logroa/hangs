@@ -137,7 +137,10 @@ def get_packs(active = True):
         select json_agg(to_json(d)) from (select * from packs where active = {active}) d;
     '''
     cur.execute(query)
-    return cur.fetchall()[0][0]
+    packs = cur.fetchall()[0][0]
+    if not packs:
+        return []
+    return packs
 
 
 def insert_vote(voter, hang, vote, existing):
@@ -221,7 +224,8 @@ def admin_required(f):
         # if not current_ip:
         #     id = find_user(0, session['user'])[0]
         #     insert_machine_registration(request.remote_addr, id)
-        if find_user(0, session['user'])[3] != 2:
+     
+        if find_user(0, session['user'])[4] != 1:
             return redirect(url_for('home'))
 
         return f(*args, **kwargs)
@@ -358,7 +362,7 @@ def vote():
 
 @app.route('/admin', methods=['GET'])
 @admin_required
-def admin():
+def admin_panel():
     # list of users and each of the packs as well as link to create new pack
     active_packs = get_packs()
     inactive_packs = get_packs(False)
@@ -374,7 +378,7 @@ def new_pack():
 
 @app.route('/admin/<pack_name>', methods=['GET'])
 @admin_required
-def admin(pack_name):
+def modify_pack(pack_name):
     pass
     # list of users and each of the packs as well as link to create new pack
 
