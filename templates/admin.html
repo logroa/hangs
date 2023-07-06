@@ -28,4 +28,13 @@
     {% endfor %}
 </div>
 
+<div id="users">
+    <h2>users</h2>
+    {% for u in users %}
+        <div class="userguy">
+            {{ u.handle }} {{ u.created_at }}
+        </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

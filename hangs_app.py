@@ -74,6 +74,16 @@ def find_user(id, username=None):
     return cur.fetchone()
 
 
+def get_users():
+    cur = db_conn.cursor()
+    query = '''
+        select json_agg(to_json(d)) from (SELECT handle, created_at FROM people ORDER BY created_at) d
+        ;
+    '''
+    cur.execute(query)
+    return cur.fetchall()[0][0] 
+
+
 def check_password(password, password_db_string):
     [algorithm, salt, password_hash] = password_db_string.split("$")
     hash_obj = hashlib.new(algorithm)
@@ -366,7 +376,8 @@ def admin_panel():
     # list of users and each of the packs as well as link to create new pack
     active_packs = get_packs()
     inactive_packs = get_packs(False)
-    return render_template('admin.html', active_packs=active_packs, inactive_packs=inactive_packs)
+    users = get_users()
+    return render_template('admin.html', active_packs=active_packs, inactive_packs=inactive_packs, users=users)
 
 
 @app.route('/admin/new_pack', methods=['GET'])
