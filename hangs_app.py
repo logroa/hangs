@@ -168,8 +168,7 @@ def get_pack(user_id, pack):
             where p.name = '{pack}') h left join 
         (select hang, sum(direction)
         from votes
-        group by hang
-        order by sum(direction) desc) c
+        group by hang) c
         on h.id = c.hang
         inner join people p
         on h.created_by = p.id
@@ -182,7 +181,9 @@ def get_pack(user_id, pack):
     if data:
         for d in data:
             d['search'] = d['name'].replace(" ", "+")
-        return data
+            if not d['sum']:
+                d['sum'] = 0
+        return sorted(data, key = lambda x: x['sum'], reverse=True)
     return []
 
 
