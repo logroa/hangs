@@ -124,13 +124,13 @@ def insert_hang(hang, pack, user):
     db_conn.commit()
 
 
-def insert_pack(name, description):
+def insert_pack(name, description, active):
     clean_name = name.replace("'", "''")
     clean_desc = description.replace("'", "''")
     cur = db_conn.cursor()
     cur.execute(
         f'''INSERT INTO packs (name, description, created_at, active)
-        VALUES ('{clean_name}', '{clean_desc}', '{datetime.now()}', true);
+        VALUES ('{clean_name}', '{clean_desc}', '{datetime.now()}', {active});
         '''
     )
     db_conn.commit()
@@ -411,10 +411,11 @@ def new_pack():
         user_id = find_user(0, session['user'])[0]
         title = request.form['title']
         description = request.form['description']
+        active = request.form['activepack']
         guys = []
         for i in range(1, 21):
             guys.append(request.form[f'hang{i}'])
-        pack_id = insert_pack(title, description)
+        pack_id = insert_pack(title, description, active)
         for g in guys:
             insert_hang(g, pack_id, user_id)
         return redirect(url_for('admin_panel'))
