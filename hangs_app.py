@@ -114,6 +114,30 @@ def get_pack_id(pack_name):
     return cur.fetchone()[0]
 
 
+def insert_hang(hang, pack, user):
+    clean_hang = hang.replace("'", "''")
+    cur = db_conn.cursor()
+    cur.execute(f'''
+                INSERT INTO hangs (name, created_by, created_at, pack)
+                VALUES ('{clean_hang}', {user}, '{datetime.now()}', {pack});
+                ''')
+    db_conn.commit()
+
+
+def insert_pack(name, description):
+    clean_name = name.replace("'", "''")
+    clean_desc = description.replace("'", "''")
+    cur = db_conn.cursor()
+    cur.execute(
+        f'''INSERT INTO packs (name, description, created_at, active)
+        VALUES ('{clean_name}', '{clean_desc}', '{datetime.now()}', true);
+        '''
+    )
+    db_conn.commit()
+    cur.execute(f'''SELECT id FROM packs WHERE name = {clean_name}''')
+    return cur.fetchone()[0]
+
+
 def get_pack(user_id, pack):
     cur = db_conn.cursor()
     query = f'''
@@ -384,8 +408,17 @@ def admin_panel():
 @admin_required
 def new_pack():
     if request.method == 'POST':
-        pass
-    
+        user_id = find_user(0, session['user'])[0]
+        title = request.form['title']
+        description = request.form['description']
+        guys = []
+        for i in range(1, 21):
+            guys.append(request.form[f'hang{i}'])
+        pack_id = insert_pack(title, description)
+        for g in guys:
+            insert_hang(g, pack_id, user_id)
+        return redirect(url_for('admin_panel'))
+
     # list of users and each of the packs as well as link to create new pack
     return render_template('new_pack.html')
 
