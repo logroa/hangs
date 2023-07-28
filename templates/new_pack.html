@@ -10,28 +10,61 @@
 <form method="post">
 
     <div class="validatebox">
-        title
-        <input type="text" name="title"
-            placeholder="title" class="validateinput"
-            value="{{ request.form['title'] }}">
-        </input>
-        <br/>
+        {% if new %}
 
-        description
-        <input type="text" name="description"
-            placeholder="decription" class="validateinput"
-            value="{{ request.form['description'] }}">
-        </input>
-        <br/>
-        {% for i in range(1,21) %}
-            hang{{ i }}
-            <input type="text" name="hang{{ i }}"
-                placeholder="hang{{ i }}" class="validateinput"
-                value="{{ request.form['hang{{ i }}'] }}">
+            title
+            <input type="text" name="title"
+                placeholder="title" class="validateinput"
+                value="{{ request.form['title'] }}">
             </input>
             <br/>
-        {% endfor %}
-        Active? <input type="checkbox" id="activepack" name="activepack" value="activepack">
+
+            description
+            <input type="text" name="description"
+                placeholder="decription" class="validateinput"
+                value="{{ request.form['description'] }}">
+            </input>
+            <br/>
+            {% for i in range(1,21) %}
+                hang{{ i }}
+                <input type="text" name="hang{{ i }}"
+                    placeholder="hang{{ i }}" class="validateinput"
+                    value="{{ request.form['hang{{ i }}'] }}">
+                </input>
+                <br/>
+            {% endfor %}
+            Active? <input type="checkbox" id="activepack" name="activepack" value="true">
+
+        {% else %}
+
+            title
+            <input type="text" name="title"
+                class="validateinput"
+                value="{{ title }}">
+            </input>
+            <br/>
+
+            description
+            <input type="text" name="description"
+                placeholder="decription" class="validateinput"
+                value="{{ description }}">
+            </input>
+            <br/>
+            {% for i in pack %}
+                hang{{ i.id }}
+                <input type="text" name="hang{{ i.id }}"
+                    class="validateinput"
+                    value="{{ i.name }}">
+                </input>
+                <br/>
+            {% endfor %}
+            Active? <input type="checkbox" id="activepack" name="activepack" value="true"
+            {% if active %}
+                checked
+            {% endif %}
+            >
+
+        {% endif %}
     </div></br>
 
     <div class="form-group">

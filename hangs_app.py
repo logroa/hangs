@@ -124,6 +124,16 @@ def insert_hang(hang, pack, user):
     db_conn.commit()
 
 
+def update_hang(id, name):
+    clean_name = name.replace("'", "''")
+    cur = db_conn.cursor()
+    cur.execute(f'''
+                UPDATE hangs SET name = '{clean_name}'
+                WHERE id = {id};
+                ''')
+    db_conn.commit()
+
+
 def insert_pack(name, description, active):
     clean_name = name.replace("'", "''")
     clean_desc = description.replace("'", "''")
@@ -136,6 +146,17 @@ def insert_pack(name, description, active):
     db_conn.commit()
     cur.execute(f'''SELECT id FROM packs WHERE name = {clean_name}''')
     return cur.fetchone()[0]
+
+
+def update_pack(id, name, description, active):
+    clean_name = name.replace("'", "''")
+    clean_desc = description.replace("'", "''")
+    cur = db_conn.cursor()
+    cur.execute(f'''
+                UPDATE packs SET name = '{clean_name}', description = '{clean_desc}', active = {active}
+                WHERE id = {id};
+                ''')
+    db_conn.commit()
 
 
 def get_pack(user_id, pack):
@@ -163,6 +184,15 @@ def get_pack(user_id, pack):
             d['search'] = d['name'].replace(" ", "+")
         return data
     return []
+
+
+def get_pack_info(pack_name):
+    clean_name = pack_name.replace("'", "''")
+    cur = db_conn.cursor()
+    cur.execute(f'''
+                SELECT * FROM packs WHERE name = '{clean_name}';
+                ''')
+    return cur.fetchone()
 
 
 def get_packs(active = True):
@@ -411,7 +441,7 @@ def new_pack():
         user_id = find_user(0, session['user'])[0]
         title = request.form['title']
         description = request.form['description']
-        active = request.form['activepack']
+        active = request.form.get('activepack', "false")
         guys = []
         for i in range(1, 21):
             guys.append(request.form[f'hang{i}'])
@@ -421,14 +451,35 @@ def new_pack():
         return redirect(url_for('admin_panel'))
 
     # list of users and each of the packs as well as link to create new pack
-    return render_template('new_pack.html')
+    return render_template('new_pack.html', new=True)
 
 
-@app.route('/admin/<pack_name>', methods=['GET'])
+@app.route('/admin/<pack_name>', methods=['GET', 'POST'])
 @admin_required
 def modify_pack(pack_name):
-    pass
-    # list of users and each of the packs as well as link to create new pack
+    user_id = find_user(0, session['user'])[0]
+    pack = [{ "name": h["name"], "id": h["id"] } for h in get_pack(user_id, pack_name)]
+    pack_info = get_pack_info(pack_name)
+    desc = pack_info[-2]
+    active = pack_info[-1]
+
+    if request.method == 'POST':
+        
+        new_title = request.form['title']
+        new_description = request.form['description']
+        new_active = request.form.get('activepack', "false")
+        update_pack(pack_info[0], new_title, new_description, new_active)
+        guys = []
+        for i in range(len(pack)):
+            new_hang = request.form[f'hang{pack[i]["id"]}']
+            if pack[i]["name"] != new_hang:
+                guys.append((pack[i]["id"], new_hang))
+        for g in guys:
+            update_hang(g[0], g[1])
+
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('new_pack.html', new=False, title=pack_name, pack=pack, description=desc, active=active)
 
 
 if __name__ == '__main__':
