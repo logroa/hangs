@@ -144,7 +144,7 @@ def insert_pack(name, description, active):
         '''
     )
     db_conn.commit()
-    cur.execute(f'''SELECT id FROM packs WHERE name = {clean_name}''')
+    cur.execute(f'''SELECT id FROM packs WHERE name = '{clean_name}';''')
     return cur.fetchone()[0]
 
 
@@ -444,10 +444,11 @@ def new_pack():
         active = request.form.get('activepack', "false")
         guys = []
         for i in range(1, 21):
-            guys.append(request.form[f'hang{i}'])
+            guys.append(request.form.get(f'hang{i}'))
         pack_id = insert_pack(title, description, active)
         for g in guys:
-            insert_hang(g, pack_id, user_id)
+            if g:
+                insert_hang(g, pack_id, user_id)
         return redirect(url_for('admin_panel'))
 
     # list of users and each of the packs as well as link to create new pack
