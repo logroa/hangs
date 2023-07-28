@@ -165,7 +165,7 @@ def get_pack(user_id, pack):
         select json_agg(to_json(d)) from (select h.id, h.name, h.packname, p.handle as created_by, c.sum, v2.direction
         from (select h1.*, p.name as packname from hangs h1
             inner join packs p on p.id = h1.pack
-            where p.name = '{pack}') h inner join 
+            where p.name = '{pack}') h left join 
         (select hang, sum(direction)
         from votes
         group by hang
@@ -325,7 +325,9 @@ def home():
 def pack(pack_name):
     user_id = find_user(0, session['user'])[0]
     pack = get_pack(user_id, pack_name)
+    print(pack)
     packs = get_packs()
+    print(packs)
     desc = ""
     chats = get_chats(get_pack_id(pack_name))
     for p in packs:
