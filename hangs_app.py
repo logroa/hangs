@@ -160,6 +160,7 @@ def update_pack(id, name, description, active):
 
 
 def get_pack(user_id, pack):
+    print(user_id, pack)
     cur = db_conn.cursor()
     query = f'''
         select json_agg(to_json(d)) from (select h.id, h.name, h.packname, p.handle as created_by, c.sum, v2.direction
@@ -213,7 +214,7 @@ def insert_vote(voter, hang, vote, existing):
     if existing > -2:
         print("updating")
         cur.execute(f'''
-            UPDATE votes SET direction={vote}, created_at={datetime.now()} WHERE voter={voter} AND hang={hang};       
+            UPDATE votes SET direction={vote}, created_at='{datetime.now()}' WHERE voter={voter} AND hang={hang};       
         ''')
     else:
         print("inserting")
@@ -290,7 +291,7 @@ def admin_required(f):
         #     id = find_user(0, session['user'])[0]
         #     insert_machine_registration(request.remote_addr, id)
      
-        if find_user(0, session['user'])[4] != 1:
+        if session.get('user') != 1:
             return redirect(url_for('home'))
 
         return f(*args, **kwargs)
@@ -324,7 +325,7 @@ def home():
 @app.route('/pack/<pack_name>', methods=['GET', 'POST'])
 @login_required
 def pack(pack_name):
-    user_id = find_user(0, session['user'])[0]
+    user_id = session['userid']
     pack = get_pack(user_id, pack_name)
     print(pack)
     packs = get_packs()
@@ -375,6 +376,7 @@ def new():
         if not user:
             insert_user(username, code)
             session['user'] = username
+            session['userid'] = find_user(0, username)[0]
             return redirect(url_for('home'))
         return render_template('new.html', message='Username already taken.')
 
@@ -389,6 +391,7 @@ def login():
             password_db_string = retreive_password(user[0])
             if check_password(request.form['code'], password_db_string):
                 session['user'] = user[1]
+                session['userid'] = user[0]
                 session.permanent = True
                 return redirect(url_for('home'))
             return render_template('login.html', message="Incorrect login")
@@ -410,7 +413,7 @@ def logout():
 def vote():
     try:
         data = request.get_json()
-        user_id = find_user(0, session['user'])[0]
+        user_id = session['userid']
         vote = data.get('vote')
         hang = data.get('hang')
         existing = data.get('existing')
@@ -441,7 +444,7 @@ def admin_panel():
 @admin_required
 def new_pack():
     if request.method == 'POST':
-        user_id = find_user(0, session['user'])[0]
+        user_id = session['userid']
         title = request.form['title']
         description = request.form['description']
         active = request.form.get('activepack', "false")
@@ -461,7 +464,7 @@ def new_pack():
 @app.route('/admin/<pack_name>', methods=['GET', 'POST'])
 @admin_required
 def modify_pack(pack_name):
-    user_id = find_user(0, session['user'])[0]
+    user_id = session['userid']
     pack = [{ "name": h["name"], "id": h["id"] } for h in get_pack(user_id, pack_name)]
     pack_info = get_pack_info(pack_name)
     desc = pack_info[-2]
