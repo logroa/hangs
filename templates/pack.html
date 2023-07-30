@@ -181,32 +181,34 @@
 
     function postChat(api_url, pack, handle) {
         chat = document.getElementById("newchat").value;
-        fetch(`${api_url}/chat`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "chat": chat,
-                "pack": pack
+        if (chat.match(/\S/g)) {
+            fetch(`${api_url}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "chat": chat,
+                    "pack": pack
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.status);
-            var chats = document.getElementById('chatcontainer').innerHTML.toString();
-            chats += `<div class="chatbox minec">
-                        ${handle}
-                        <div class="message minem">
-                            ${chat}
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.status);
+                var chats = document.getElementById('chatcontainer').innerHTML.toString();
+                chats += `<div class="chatbox minec">
+                            ${handle}
+                            <div class="message minem">
+                                ${chat}
+                            </div>
+                            <div class="messagedate">${data.date}</div>
                         </div>
-                        <div class="messagedate">${data.date}</div>
-                    </div>
-                    <br/>`
-            document.getElementById('chatcontainer').innerHTML = chats;
-            document.getElementById('newchat').value = '';
-        })
+                        <br/>`
+                document.getElementById('chatcontainer').innerHTML = chats;
+                document.getElementById('newchat').value = '';
+            })
+        }
     }
 
 </script>
